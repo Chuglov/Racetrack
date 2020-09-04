@@ -111,23 +111,40 @@ list<Horse *> Track::get_horses()
 
 void Track::race()
 {
+	static int bet_num = 1;
+	string filename = "bet" + to_string(bet_num) + ".txt";
+	ofstream fout(filename);
 	list<Horse *>::iterator it = this->horses.begin();
 	string horse_name;
 	int horse_num;
 	int victories = 0;
 	int client_bet = client->bet();
 
+	fout << "Client bet is the horse # " << client_bet << endl;
+	it = this->horses.begin();
+	horse_num = 0;
+
+	while (it != this->horses.end())
+	{
+		fout << horse_num << ". " << (*it)->get_name() << "\nBreed: " << (*it)->get_breed() << "\nBirth year: " 
+			<< (*it)->get_bdyear() << "\nVictories: " << (*it)->get_victories() << endl << endl;
+		++it;
+		++horse_num;
+	}
+
 	for (int i = 0; i < 5; ++i)
 	{
 		it = this->horses.begin();
-
 		horse_num = 0;
+		
+		fout << "Race #" << i + 1 << endl;
 		while (it != this->horses.end())
 		{
 			if (horse_num == client_bet)
 				horse_name = (*it)->get_name();
 
 			(*it)->set_speed();
+			fout << (*it)->get_name() << " speed: " << (*it)->get_speed() << endl << endl;
 			++it;
 			++horse_num;
 		}
@@ -138,18 +155,20 @@ void Track::race()
 		});
 
 		it = this->horses.begin();
-		cout << "Race #" << i + 1 << " winner: " << (*it)->get_name() << endl;
+		fout << "Race #" << i + 1 << " winner: " << (*it)->get_name() << endl;
+
 		if (horse_name == (*it)->get_name())
 			++victories;
 	}
 
 	cout << endl;
 	notify(victories);
-
+	++bet_num;
+	fout.close();
 }
 
 void Track::notify(int victories)
 {
-	string result = "Dear " + client->get_name() + ", your bet has won " + victories << " times";
+	string result = "Dear " + client->get_name() + ", your bet has won " + to_string(victories) + " times";
 	this->client->update(result);
 }

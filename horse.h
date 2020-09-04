@@ -25,6 +25,6 @@ public:
 	std::string get_breed();
 	std::string get_name();
 	int get_bdyear();
-	int get_wins();
+	int get_victories();
 	int get_speed() const;
 };

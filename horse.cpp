@@ -61,7 +61,7 @@ int Horse::get_bdyear()
 	return this->birth_year;
 }
 
-int Horse::get_wins()
+int Horse::get_victories()
 {
 	return this->victories;
 }
