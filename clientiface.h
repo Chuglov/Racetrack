@@ -5,6 +5,7 @@ class IClient
 {
 public:
 	virtual ~IClient() {};
-	virtual void bet() = 0;
-	virtual void update() = 0;
+	virtual int bet() = 0;
+	virtual void update(std::string) = 0;
+	virtual std::string get_name() = 0;
 };

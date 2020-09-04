@@ -66,7 +66,7 @@ int Horse::get_wins()
 	return this->victories;
 }
 
-int Horse::get_speed()
+int Horse::get_speed() const
 {
 	return this->speed;
 }

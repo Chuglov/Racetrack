@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <exception>
+#include <algorithm>
 #include <string>
 #include "track.h"
 #include "valid.h"
@@ -11,30 +12,8 @@ Track::~Track()
 {
 }
 
-void Track::attach(IClient *client)
-{
-	client_list.push_back(client);
-}
-
-void Track::detach(IClient *client)
-{
-	client_list.remove(client);
-}
-
-void Track::place_bets()
-{
-	list<IClient *>::iterator it = client_list.begin();
-
-	while (it != client_list.end())
-	{
-		(*it)->bet();
-		++it;
-	}
-}
-
 list<Horse *> Track::get_horses()
 {
-	list<Horse *> horses;
 	Horse *h = new Horse();
 	ifstream fin("horses.txt");
 	string str, tmp;
@@ -110,7 +89,6 @@ list<Horse *> Track::get_horses()
 
 			if (flag == 4)
 			{
-				h->set_speed();
 				cout << endl;
 				flag = 0;
 				horses.push_back(h);
@@ -126,17 +104,52 @@ list<Horse *> Track::get_horses()
 		getchar();
 	}
 
+	delete h;
 	fin.close();
-	return horses;
+	return this->horses;
 }
 
-void Track::notify()
+void Track::race()
 {
-	list<IClient *>::iterator it = client_list.begin();
+	list<Horse *>::iterator it = this->horses.begin();
+	string horse_name;
+	int horse_num;
+	int victories = 0;
+	int client_bet = client->bet();
 
-	while (it != client_list.end())
+	for (int i = 0; i < 5; ++i)
 	{
-		(*it)->update();
-		++it;
+		it = this->horses.begin();
+
+		horse_num = 0;
+		while (it != this->horses.end())
+		{
+			if (horse_num == client_bet)
+				horse_name = (*it)->get_name();
+
+			(*it)->set_speed();
+			++it;
+			++horse_num;
+		}
+	
+		horses.sort([](const Horse *h1, const Horse *h2)
+		{
+			return h1->get_speed() > h2->get_speed();
+		});
+
+		it = this->horses.begin();
+		cout << "Race #" << i + 1 << " winner: " << (*it)->get_name() << endl;
+		if (horse_name == (*it)->get_name())
+			++victories;
 	}
+
+	cout << endl;
+	notify(victories);
+
+}
+
+void Track::notify(int victories)
+{
+	string result = "Dear " + client->get_name() + ", your bet has won " + victories << " times";
+	this->client->update(result);
 }

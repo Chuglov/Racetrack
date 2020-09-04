@@ -12,6 +12,8 @@ private:
 public:
 	Client(Track &);
 	virtual ~Client();
-	void bet() override;
-	void update() override;
+	int bet() override;
+	void update(std::string) override;
+
+	std::string get_name() override;
 };

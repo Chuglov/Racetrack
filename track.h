@@ -6,15 +6,14 @@
 class Track : public IRacetrack
 {
 private:
-	std::list<IClient *> client_list;
+	IClient *client;
+	std::list<Horse *> horses;
 	std::string message;
 
 public:
 	virtual ~Track();
 
-	void attach(IClient *) override;
-	void detach(IClient *) override;
-	void place_bets() override;
 	std::list<Horse *> get_horses() override;
-	void notify() override;
+	void race() override;
+	void notify(int) override;
 };

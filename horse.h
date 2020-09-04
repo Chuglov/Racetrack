@@ -26,5 +26,5 @@ public:
 	std::string get_name();
 	int get_bdyear();
 	int get_wins();
-	int get_speed();
+	int get_speed() const;
 };

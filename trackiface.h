@@ -8,9 +8,7 @@ class IRacetrack
 {
 public:
 	virtual ~IRacetrack() {};
-	virtual void attach(IClient *) = 0;
-	virtual void detach(IClient *) = 0;
-	virtual void place_bets() = 0;
 	virtual std::list<Horse *> get_horses() = 0;
-	virtual void notify() = 0;
+	virtual void race() = 0;
+	virtual void notify(int) = 0;
 };
