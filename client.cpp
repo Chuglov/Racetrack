@@ -13,6 +13,8 @@ Client::Client(Track &track_) : track(track_)
 		cout << "Enter your name: ";
 		getline(cin, name);
 	} while (!str_valid(name));
+
+	this->track.set_client(this);
 }
 
 Client::~Client()
@@ -21,11 +23,17 @@ Client::~Client()
 
 int Client::bet()
 {
-	list<Horse *>h = this->track.get_horses();
-	list<Horse *>::iterator it = h.begin();
+	list<Horse *>h;
+	list<Horse *>::iterator it;
 	string tmp;
 	int num = 1;
 	int choice;
+
+	h = this->track.get_horses();
+	if (h.empty())
+		return -1;
+
+	it = h.begin();
 
 	while (it != h.end())
 	{

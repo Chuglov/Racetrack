@@ -4,11 +4,12 @@
 #include "clientiface.h"
 #include "horse.h"
 
-class IRacetrack
+class ITrack
 {
 public:
-	virtual ~IRacetrack() {};
+	virtual ~ITrack() {};
 	virtual std::list<Horse *> get_horses() = 0;
-	virtual void race() = 0;
+	virtual int race() = 0;
 	virtual void notify(int) = 0;
+	virtual void set_client(IClient *) = 0;
 };

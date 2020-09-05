@@ -8,12 +8,19 @@
 
 using namespace std;
 
+Track::Track()
+{
+}
+
 Track::~Track()
 {
 }
 
 list<Horse *> Track::get_horses()
 {
+	if (!horses.empty())
+		return horses;
+
 	Horse *h = new Horse();
 	ifstream fin("horses.txt");
 	string str, tmp;
@@ -69,7 +76,7 @@ list<Horse *> Track::get_horses()
 					throw exception("There is an error in the file\n");
 
 				tmp = str.substr(12);
-				if (!num_valid(tmp) && (stoi(tmp) < 2000 || stoi(tmp) > 2010) )
+				if (!num_valid(tmp) || stoi(tmp) < 2000 || stoi(tmp) > 2010 )
 					throw exception("There is a horse birth year error in the file");
 
 				h->set_bdyear(stoi(tmp));
@@ -92,16 +99,18 @@ list<Horse *> Track::get_horses()
 				cout << endl;
 				flag = 0;
 				horses.push_back(h);
+				h = new Horse();
+				num--;
 			}
 
 			flag++;
-			num--;
 		}
 	}
 	catch (exception &ex)
 	{
 		cout << ex.what() << endl;
 		getchar();
+		this->horses.clear();
 	}
 
 	delete h;
@@ -109,7 +118,7 @@ list<Horse *> Track::get_horses()
 	return this->horses;
 }
 
-void Track::race()
+int Track::race()
 {
 	static int bet_num = 1;
 	string filename = "bet" + to_string(bet_num) + ".txt";
@@ -120,12 +129,18 @@ void Track::race()
 	int victories = 0;
 	int client_bet = client->bet();
 
-	fout << "Client bet is the horse # " << client_bet << endl;
+	if (client_bet == -1)
+		return -1;
+
+	fout << "Client bet is the horse #" << client_bet << endl;
 	it = this->horses.begin();
-	horse_num = 0;
+	horse_num = 1;
 
 	while (it != this->horses.end())
 	{
+		if (horse_num == client_bet)
+			horse_name = (*it)->get_name();
+
 		fout << horse_num << ". " << (*it)->get_name() << "\nBreed: " << (*it)->get_breed() << "\nBirth year: " 
 			<< (*it)->get_bdyear() << "\nVictories: " << (*it)->get_victories() << endl << endl;
 		++it;
@@ -135,40 +150,43 @@ void Track::race()
 	for (int i = 0; i < 5; ++i)
 	{
 		it = this->horses.begin();
-		horse_num = 0;
+		horse_num = 1;
 		
 		fout << "Race #" << i + 1 << endl;
 		while (it != this->horses.end())
 		{
-			if (horse_num == client_bet)
-				horse_name = (*it)->get_name();
-
 			(*it)->set_speed();
-			fout << (*it)->get_name() << " speed: " << (*it)->get_speed() << endl << endl;
+			fout << (*it)->get_name() << " speed: " << (*it)->get_speed() << endl;
 			++it;
 			++horse_num;
 		}
-	
-		horses.sort([](const Horse *h1, const Horse *h2)
+
+		it = max_element(horses.begin(), horses.end(), [](const Horse *h1, const Horse *h2)
 		{
 			return h1->get_speed() > h2->get_speed();
 		});
 
-		it = this->horses.begin();
-		fout << "Race #" << i + 1 << " winner: " << (*it)->get_name() << endl;
+		fout << "Race #" << i + 1 << " winner: " << (*it)->get_name() << endl << endl;
 
 		if (horse_name == (*it)->get_name())
 			++victories;
 	}
 
-	cout << endl;
+	fout << this->client->get_name() << " has won " << victories << " time(s)";
+
 	notify(victories);
 	++bet_num;
 	fout.close();
+	return 0;
 }
 
 void Track::notify(int victories)
 {
 	string result = "Dear " + client->get_name() + ", your bet has won " + to_string(victories) + " times";
 	this->client->update(result);
+}
+
+void Track::set_client(IClient *client_)
+{
+	this->client = client_;
 }

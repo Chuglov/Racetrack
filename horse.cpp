@@ -5,6 +5,7 @@
 
 Horse::Horse()
 {
+	srand(time(NULL));
 }
 
 Horse::Horse(const Horse &h)
@@ -42,7 +43,6 @@ void Horse::set_victories(int victories)
 
 void Horse::set_speed()
 {
-	srand(time(NULL));
 	this->speed = rand() % 40 + 10;
 }
 

@@ -3,17 +3,18 @@
 #include <list>
 #include "trackiface.h"
 
-class Track : public IRacetrack
+class Track : public ITrack
 {
 private:
 	IClient *client;
 	std::list<Horse *> horses;
-	std::string message;
 
 public:
+	Track();
 	virtual ~Track();
 
 	std::list<Horse *> get_horses() override;
-	void race() override;
+	int race() override;
 	void notify(int) override;
+	void set_client(IClient *) override;
 };
